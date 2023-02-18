@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Mokepon</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="../style/index.css" />
+    </head>
+    <body>
+        <h1>Mokepon 🔥💧☘️</h1>
+        <section id="selectPet">
+            <h2>Elige tu mascota</h2>
+            <div class="container_mokepons">
+                <label for="hipoge" class="hipoge">
+                    Hipoge 💧
+                    <input
+                        type="radio"
+                        name="mokepon"
+                        id="hipoge"
+                        value="hipoge"
+                    />
+                </label>
+                <label for="capipego" class="capipego">
+                    Capipego 🪨
+                    <input
+                        type="radio"
+                        name="mokepon"
+                        id="capipego"
+                        value="capipego"
+                    />
+                </label>
+                <label for="ratigueya" class="ratigueya">
+                    Ratigueya 🔥
+                    <input
+                        type="radio"
+                        name="mokepon"
+                        id="ratigueya"
+                        value="ratigueya"
+                    />
+                </label>
+                <label for="langostelvis" class="langostelvis">
+                    Langostelvis 💧🔥
+                    <input
+                        type="radio"
+                        name="mokepon"
+                        id="langostelvis"
+                        value="langostelvis"
+                    />
+                </label>
+                <label for="tucapalma" class="tucapalma">
+                    Tucapalma 💧🪨
+                    <input
+                        type="radio"
+                        name="mokepon"
+                        id="tucapalma"
+                        value="tucapalma"
+                    />
+                </label>
+                <label for="pydos" class="pydos">
+                    Pydos 🪨 🔥
+                    <input
+                        type="radio"
+                        name="mokepon"
+                        id="pydos"
+                        value="pydos"
+                    />
+                </label>
+            </div>
+            <button id="buttonPet">Seleccionar</button>
+        </section>
+        <section id="selection-attack" class="none">
+            <h2>Elige tu ataque:</h2>
+
+            <p>
+                Tu mascota <span id="yourPet"></span> tiene
+                <span id="yourPetLife">3</span> vidas
+            </p>
+            <p>
+                La mascota del enemigo <span id="enemyPet"></span> tiene
+                <span id="pcPetLife">3</span> vidas
+            </p>
+            <div class="container_buttons-attack">
+                <button id="buttonFire">Fire 🔥</button>
+                <button id="buttonWater">Water 💧</button>
+                <button id="buttonEarth">Earth ☘️</button>
+            </div>
+        </section>
+        <section id="message">
+            <!-- <p >tu mascota ataco con FUEGO, la mascota del enemigo ataco con TIERRA - GANASTE</p> -->
+        </section>
+        <section>
+            <button id="reload" class="none">Reiniciar</button>
+        </section>
+        <script>
+            var exports = {};
+        </script>
+        <script type="module" src="/src/js/rockPapper.js"></script>
+        <script type="module" src="/src/js/mokepon.js"></script>
+    </body>
+</html>
