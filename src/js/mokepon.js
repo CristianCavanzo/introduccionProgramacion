@@ -52,7 +52,7 @@ const result = () => {
     }
 };
 const disableButtons = () => {
-    var _a;
+    var _a, _b;
     const buttonFire = document.getElementById('buttonFire');
     const buttonWater = document.getElementById('buttonWater');
     const buttonEarth = document.getElementById('buttonEarth');
@@ -60,6 +60,7 @@ const disableButtons = () => {
     buttonWater.disabled = true;
     buttonEarth.disabled = true;
     (_a = document.getElementById('reload')) === null || _a === void 0 ? void 0 : _a.classList.remove('none');
+    (_b = document.getElementById('reload')) === null || _b === void 0 ? void 0 : _b.classList.add('reload');
 };
 const resultCombat = () => {
     const parrafo = document.createElement('p');

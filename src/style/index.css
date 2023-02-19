@@ -51,6 +51,24 @@ body {
     background-blend-mode: darken;
     box-shadow: 0 0 5px 1px #00000045;
     border: 2px solid #ff5a25;
+    position: relative;
+    background-size: cover;
+}
+.container_mokepons label:has(input:checked) p {
+    z-index: 2;
+    color: #fff;
+}
+.container_mokepons label:has(input:checked)::before {
+    content: '';
+    display: flex;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+    background-color: #4040409e;
+    border-radius: 10px;
+    z-index: 1;
 }
 .hipoge {
     background: #fff url('../assets/mokepons_mokepon_hipodoge_attack.png');
@@ -86,6 +104,15 @@ button {
     justify-content: space-around;
 }
 #reload {
-    display: block;
     margin: 0 auto;
+}
+.reload {
+    display: block;
+}
+h1,
+h2 {
+    text-align: center;
+}
+h2 {
+    margin-bottom: 16px;
 }

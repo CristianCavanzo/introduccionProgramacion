@@ -67,6 +67,7 @@ const disableButtons = () => {
     buttonWater.disabled = true;
     buttonEarth.disabled = true;
     document.getElementById('reload')?.classList.remove('none');
+    document.getElementById('reload')?.classList.add('reload');
 };
 
 const resultCombat = () => {
