@@ -116,3 +116,25 @@ h2 {
 h2 {
     margin-bottom: 16px;
 }
+
+.information {
+    display: flex;
+    column-gap: 20px;
+    border-radius: 16px;
+    justify-content: space-evenly;
+    margin: 0 auto;
+    max-width: 700px;
+}
+.information .information_container {
+    border-radius: 8px;
+    border: 2px solid black;
+    padding: 8px 24px;
+    text-align: center;
+}
+#resultado {
+    text-align: center;
+    font-weight: bold;
+    margin: 20px 0;
+    text-transform: capitalize;
+    font-size: 24px;
+}

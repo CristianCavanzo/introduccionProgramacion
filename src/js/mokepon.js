@@ -77,10 +77,20 @@ const resultCombat = () => {
 };
 const createMessage = () => {
     const parrafo = document.createElement('p');
+    const resultado = document.getElementById('resultado');
+    const attackPlayer = document.getElementById('attackPlayer');
+    const attackPC = document.getElementById('attackPC');
+    const parrafoPlayer = document.createElement('p');
+    const parrafoPC = document.createElement('p');
+    parrafoPlayer.innerHTML = ataqueJugador;
+    parrafoPC.innerHTML = ataqueEnemigo;
     if (pcPetLife !== 0 && yourPetLife !== 0) {
-        parrafo.innerHTML = `tu mascota ataco con ${ataqueJugador}, la mascota del enemigo ataco con ${ataqueEnemigo} - ${result()}`;
-        const containerParrafo = document.getElementById('message');
-        containerParrafo === null || containerParrafo === void 0 ? void 0 : containerParrafo.appendChild(parrafo);
+        resultado.innerHTML = result();
+        attackPlayer === null || attackPlayer === void 0 ? void 0 : attackPlayer.appendChild(parrafoPlayer);
+        attackPC === null || attackPC === void 0 ? void 0 : attackPC.appendChild(parrafoPC);
+        // parrafo.innerHTML = `tu mascota ataco con ${ataqueJugador}, la mascota del enemigo ataco con ${ataqueEnemigo} - ${result()}`;
+        // const containerParrafo = document.getElementById('message');
+        // containerParrafo?.appendChild(parrafo);
     }
     resultCombat();
 };

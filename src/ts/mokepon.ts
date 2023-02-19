@@ -85,10 +85,24 @@ const resultCombat = () => {
 
 const createMessage = () => {
     const parrafo = document.createElement('p');
+    const resultado: HTMLParagraphElement = document.getElementById(
+        'resultado'
+    ) as HTMLParagraphElement;
+    const attackPlayer = document.getElementById('attackPlayer');
+    const attackPC = document.getElementById('attackPC');
+
+    const parrafoPlayer = document.createElement('p');
+    const parrafoPC = document.createElement('p');
+
+    parrafoPlayer.innerHTML = ataqueJugador;
+    parrafoPC.innerHTML = ataqueEnemigo;
     if (pcPetLife !== 0 && yourPetLife !== 0) {
-        parrafo.innerHTML = `tu mascota ataco con ${ataqueJugador}, la mascota del enemigo ataco con ${ataqueEnemigo} - ${result()}`;
-        const containerParrafo = document.getElementById('message');
-        containerParrafo?.appendChild(parrafo);
+        resultado.innerHTML = result();
+        attackPlayer?.appendChild(parrafoPlayer);
+        attackPC?.appendChild(parrafoPC);
+        // parrafo.innerHTML = `tu mascota ataco con ${ataqueJugador}, la mascota del enemigo ataco con ${ataqueEnemigo} - ${result()}`;
+        // const containerParrafo = document.getElementById('message');
+        // containerParrafo?.appendChild(parrafo);
     }
     resultCombat();
 };

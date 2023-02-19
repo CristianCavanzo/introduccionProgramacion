@@ -78,29 +78,33 @@
         <section id="selection-attack" class="none">
             <h2>Elige tu ataque:</h2>
 
-            <p>
-                Tu mascota <span id="yourPet"></span> tiene
-                <span id="yourPetLife">3</span> vidas
-            </p>
-            <p>
-                La mascota del enemigo <span id="enemyPet"></span> tiene
-                <span id="pcPetLife">3</span> vidas
-            </p>
             <div class="container_buttons-attack">
                 <button id="buttonFire">Fire 🔥</button>
                 <button id="buttonWater">Water 💧</button>
                 <button id="buttonEarth">Earth ☘️</button>
             </div>
+            <section>
+                <p id="resultado"></p>
+            </section>
+            <section>
+                <button id="reload" class="none">Reiniciar</button>
+            </section>
+            <div class="information">
+                <div class="information_container">
+                    <p>Tu Mokepon</p>
+                    <span id="yourPet"></span>
+                    <p><span id="yourPetLife">3</span> vidas</p>
+                    <div id="attackPlayer"></div>
+                </div>
+                <div class="information_container">
+                    <p>Mokepon Enemigo</p>
+                    <span id="enemyPet"></span>
+                    <p><span id="pcPetLife">3</span> vidas</p>
+                    <div id="attackPC"></div>
+                </div>
+            </div>
         </section>
-        <section id="message">
-            <!-- <p >tu mascota ataco con FUEGO, la mascota del enemigo ataco con TIERRA - GANASTE</p> -->
-        </section>
-        <section>
-            <button id="reload" class="none">Reiniciar</button>
-        </section>
-        <script>
-            var exports = {};
-        </script>
+
         <script type="module" src="/src/js/rockPapper.js"></script>
         <script type="module" src="/src/js/mokepon.js"></script>
     </body>
