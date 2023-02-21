@@ -1,4 +1,16 @@
 import random from './rockPapper.js';
+const buttonFire = document.getElementById('buttonFire');
+const buttonWater = document.getElementById('buttonWater');
+const buttonEarth = document.getElementById('buttonEarth');
+const buttonReload = document.getElementById('reload');
+const yourPet = document.getElementById('yourPet');
+const mokepons = document.querySelectorAll('[name="mokepon"]');
+const enemyPet = document.getElementById('enemyPet');
+const buttonPet = document.getElementById('buttonPet');
+const resultado = document.getElementById('resultado');
+const attackPlayer = document.getElementById('attackPlayer');
+const attackPC = document.getElementById('attackPC');
+const containerParrafo = document.getElementById('message');
 const typeAtack = ['FUEGO', 'TIERRA', 'AGUA'];
 let ataqueJugador;
 let ataqueEnemigo;
@@ -7,11 +19,9 @@ let pcPetLife = 3;
 const selectEnemyPet = () => {
     var _a, _b;
     let randomPet = random(0, 5);
-    const mokepons = document.querySelectorAll('[name="mokepon"]');
     if (!mokepons) {
         return 'error';
     }
-    const enemyPet = document.getElementById('enemyPet');
     const selection = Array.from(mokepons)[randomPet];
     if (enemyPet) {
         enemyPet.innerHTML = selection.value;
@@ -52,15 +62,11 @@ const result = () => {
     }
 };
 const disableButtons = () => {
-    var _a, _b;
-    const buttonFire = document.getElementById('buttonFire');
-    const buttonWater = document.getElementById('buttonWater');
-    const buttonEarth = document.getElementById('buttonEarth');
     buttonFire.disabled = true;
     buttonWater.disabled = true;
     buttonEarth.disabled = true;
-    (_a = document.getElementById('reload')) === null || _a === void 0 ? void 0 : _a.classList.remove('none');
-    (_b = document.getElementById('reload')) === null || _b === void 0 ? void 0 : _b.classList.add('reload');
+    buttonReload === null || buttonReload === void 0 ? void 0 : buttonReload.classList.remove('none');
+    buttonReload === null || buttonReload === void 0 ? void 0 : buttonReload.classList.add('reload');
 };
 const resultCombat = () => {
     const parrafo = document.createElement('p');
@@ -72,14 +78,9 @@ const resultCombat = () => {
         parrafo.innerHTML = `PERDISTE :c`;
         disableButtons();
     }
-    const containerParrafo = document.getElementById('message');
     containerParrafo === null || containerParrafo === void 0 ? void 0 : containerParrafo.appendChild(parrafo);
 };
 const createMessage = () => {
-    const parrafo = document.createElement('p');
-    const resultado = document.getElementById('resultado');
-    const attackPlayer = document.getElementById('attackPlayer');
-    const attackPC = document.getElementById('attackPC');
     const parrafoPlayer = document.createElement('p');
     const parrafoPC = document.createElement('p');
     parrafoPlayer.innerHTML = ataqueJugador;
@@ -88,9 +89,6 @@ const createMessage = () => {
         resultado.innerHTML = result();
         attackPlayer === null || attackPlayer === void 0 ? void 0 : attackPlayer.appendChild(parrafoPlayer);
         attackPC === null || attackPC === void 0 ? void 0 : attackPC.appendChild(parrafoPC);
-        // parrafo.innerHTML = `tu mascota ataco con ${ataqueJugador}, la mascota del enemigo ataco con ${ataqueEnemigo} - ${result()}`;
-        // const containerParrafo = document.getElementById('message');
-        // containerParrafo?.appendChild(parrafo);
     }
     resultCombat();
 };
@@ -112,11 +110,9 @@ const atackWater = () => {
 const reload = () => {
     window.location.reload();
 };
-const buttonPet = document.getElementById('buttonPet');
 if (buttonPet) {
     const selectPetPlayer = () => {
         const mokepon = document.querySelector('[name="mokepon"]:checked');
-        const yourPet = document.getElementById('yourPet');
         if (!mokepon) {
             return console.log('selecciona un mokepon');
         }
@@ -125,10 +121,6 @@ if (buttonPet) {
         }
         selectEnemyPet();
     };
-    const buttonFire = document.getElementById('buttonFire');
-    const buttonWater = document.getElementById('buttonWater');
-    const buttonEarth = document.getElementById('buttonEarth');
-    const buttonReload = document.getElementById('reload');
     if (buttonFire && buttonWater && buttonEarth && buttonReload) {
         buttonFire.addEventListener('click', atackFire);
         buttonWater.addEventListener('click', atackWater);

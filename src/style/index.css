@@ -98,10 +98,16 @@ button {
     border-radius: 8px;
     color: white;
 }
+button:disabled {
+    filter: opacity(0.5);
+    cursor: inherit;
+}
 .container_buttons-attack {
     width: 100%;
     display: flex;
     justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 #reload {
     margin: 0 auto;
@@ -118,7 +124,9 @@ h2 {
 }
 
 .information {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-items: center;
     column-gap: 20px;
     border-radius: 16px;
     justify-content: space-evenly;
@@ -130,6 +138,8 @@ h2 {
     border: 2px solid black;
     padding: 8px 24px;
     text-align: center;
+    min-width: 130px;
+    width: 170px;
 }
 #resultado {
     text-align: center;
@@ -137,4 +147,11 @@ h2 {
     margin: 20px 0;
     text-transform: capitalize;
     font-size: 24px;
+}
+
+@media (max-width: 768px) {
+    .information {
+        grid-template-columns: 1fr;
+        row-gap: 16px;
+    }
 }

@@ -1,18 +1,38 @@
 import random from './rockPapper.js';
+const buttonFire = document.getElementById('buttonFire');
+const buttonWater = document.getElementById('buttonWater');
+const buttonEarth = document.getElementById('buttonEarth');
+const buttonReload = document.getElementById('reload');
+const yourPet = document.getElementById('yourPet');
+
+const mokepons: NodeListOf<HTMLInputElement> =
+    document.querySelectorAll('[name="mokepon"]');
+const enemyPet = document.getElementById('enemyPet');
+const buttonPet = document.getElementById('buttonPet');
+
+const resultado: HTMLParagraphElement = document.getElementById(
+    'resultado'
+) as HTMLParagraphElement;
+
+const attackPlayer = document.getElementById('attackPlayer');
+const attackPC = document.getElementById('attackPC');
+
+const containerParrafo = document.getElementById('message');
+
 type TypeAtacks = 'FUEGO' | 'TIERRA' | 'AGUA';
 const typeAtack: TypeAtacks[] = ['FUEGO', 'TIERRA', 'AGUA'];
 let ataqueJugador: TypeAtacks;
 let ataqueEnemigo: TypeAtacks;
 let yourPetLife = 3;
 let pcPetLife = 3;
+
 const selectEnemyPet = () => {
     let randomPet = random(0, 5);
-    const mokepons: NodeListOf<HTMLInputElement> =
-        document.querySelectorAll('[name="mokepon"]');
+
     if (!mokepons) {
         return 'error';
     }
-    const enemyPet = document.getElementById('enemyPet');
+
     const selection = Array.from(mokepons)[randomPet];
     if (enemyPet) {
         enemyPet.innerHTML = selection.value;
@@ -54,20 +74,11 @@ const result = () => {
 };
 
 const disableButtons = () => {
-    const buttonFire = document.getElementById(
-        'buttonFire'
-    ) as HTMLButtonElement;
-    const buttonWater = document.getElementById(
-        'buttonWater'
-    ) as HTMLButtonElement;
-    const buttonEarth = document.getElementById(
-        'buttonEarth'
-    ) as HTMLButtonElement;
-    buttonFire.disabled = true;
-    buttonWater.disabled = true;
-    buttonEarth.disabled = true;
-    document.getElementById('reload')?.classList.remove('none');
-    document.getElementById('reload')?.classList.add('reload');
+    (buttonFire as HTMLButtonElement).disabled = true;
+    (buttonWater as HTMLButtonElement).disabled = true;
+    (buttonEarth as HTMLButtonElement).disabled = true;
+    buttonReload?.classList.remove('none');
+    buttonReload?.classList.add('reload');
 };
 
 const resultCombat = () => {
@@ -79,18 +90,10 @@ const resultCombat = () => {
         parrafo.innerHTML = `PERDISTE :c`;
         disableButtons();
     }
-    const containerParrafo = document.getElementById('message');
     containerParrafo?.appendChild(parrafo);
 };
 
 const createMessage = () => {
-    const parrafo = document.createElement('p');
-    const resultado: HTMLParagraphElement = document.getElementById(
-        'resultado'
-    ) as HTMLParagraphElement;
-    const attackPlayer = document.getElementById('attackPlayer');
-    const attackPC = document.getElementById('attackPC');
-
     const parrafoPlayer = document.createElement('p');
     const parrafoPC = document.createElement('p');
 
@@ -100,9 +103,6 @@ const createMessage = () => {
         resultado.innerHTML = result();
         attackPlayer?.appendChild(parrafoPlayer);
         attackPC?.appendChild(parrafoPC);
-        // parrafo.innerHTML = `tu mascota ataco con ${ataqueJugador}, la mascota del enemigo ataco con ${ataqueEnemigo} - ${result()}`;
-        // const containerParrafo = document.getElementById('message');
-        // containerParrafo?.appendChild(parrafo);
     }
     resultCombat();
 };
@@ -127,14 +127,11 @@ const reload = () => {
     window.location.reload();
 };
 
-const buttonPet = document.getElementById('buttonPet');
 if (buttonPet) {
     const selectPetPlayer = () => {
         const mokepon: HTMLInputElement | null = document.querySelector(
             '[name="mokepon"]:checked'
         );
-        const yourPet = document.getElementById('yourPet');
-
         if (!mokepon) {
             return console.log('selecciona un mokepon');
         }
@@ -143,10 +140,6 @@ if (buttonPet) {
         }
         selectEnemyPet();
     };
-    const buttonFire = document.getElementById('buttonFire');
-    const buttonWater = document.getElementById('buttonWater');
-    const buttonEarth = document.getElementById('buttonEarth');
-    const buttonReload = document.getElementById('reload');
     if (buttonFire && buttonWater && buttonEarth && buttonReload) {
         buttonFire.addEventListener('click', atackFire);
         buttonWater.addEventListener('click', atackWater);
