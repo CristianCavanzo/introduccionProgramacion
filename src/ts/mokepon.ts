@@ -5,8 +5,6 @@ const buttonEarth = document.getElementById('buttonEarth');
 const buttonReload = document.getElementById('reload');
 const yourPet = document.getElementById('yourPet');
 
-const mokepons: NodeListOf<HTMLInputElement> =
-    document.querySelectorAll('[name="mokepon"]');
 const enemyPet = document.getElementById('enemyPet');
 const buttonPet = document.getElementById('buttonPet');
 
@@ -16,6 +14,7 @@ const resultado: HTMLParagraphElement = document.getElementById(
 
 const attackPlayer = document.getElementById('attackPlayer');
 const attackPC = document.getElementById('attackPC');
+const containerMokepons = document.getElementById('containerMokepons');
 
 const containerParrafo = document.getElementById('message');
 
@@ -25,9 +24,51 @@ let ataqueJugador: TypeAtacks;
 let ataqueEnemigo: TypeAtacks;
 let yourPetLife = 3;
 let pcPetLife = 3;
+let opcionesDeMokepones;
+const mokepones = [];
+class Mokepon {
+    constructor(
+        public name: string,
+        public foto: string,
+        public vida: number,
+        public atacks: { nombre: TypeAtacks }[]
+    ) {}
+}
 
-const selectEnemyPet = () => {
-    let randomPet = random(0, 5);
+const hipodoge = new Mokepon(
+    'hipodoge',
+    '../assets/mokepons_mokepon_hipodoge_attack.png',
+    3,
+    [
+        {
+            nombre: 'AGUA',
+        },
+    ]
+);
+const capipepo = new Mokepon(
+    'capipepo',
+    '../assets/mokepons_mokepon_capipepo_attack.png',
+    3,
+    [
+        {
+            nombre: 'TIERRA',
+        },
+    ]
+);
+const ratigueya = new Mokepon(
+    'ratigueya',
+    '../assets/mokepons_mokepon_ratigueya_attack.png',
+    3,
+    [
+        {
+            nombre: 'FUEGO',
+        },
+    ]
+);
+mokepones.push(hipodoge, capipepo, ratigueya);
+
+const selectEnemyPet = (mokepons: NodeListOf<HTMLInputElement> | null) => {
+    let randomPet = random(0, mokepons?.length || 3);
 
     if (!mokepons) {
         return 'error';
@@ -128,6 +169,24 @@ const reload = () => {
 };
 
 if (buttonPet) {
+    mokepones.forEach((mokepon) => {
+        const name = mokepon.name;
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'mokepon';
+        input.id = name;
+        input.value = name;
+        const label = document.createElement('label');
+        label.htmlFor = name;
+        label.className = name;
+        const p = document.createElement('p');
+        p.innerHTML = name;
+        label.appendChild(input);
+        label.appendChild(p);
+        containerMokepons?.appendChild(label);
+    });
+    const mokepons: NodeListOf<HTMLInputElement> =
+        document.querySelectorAll('[name="mokepon"]');
     const selectPetPlayer = () => {
         const mokepon: HTMLInputElement | null = document.querySelector(
             '[name="mokepon"]:checked'
@@ -138,7 +197,7 @@ if (buttonPet) {
         if (yourPet) {
             yourPet.innerHTML = mokepon.value;
         }
-        selectEnemyPet();
+        selectEnemyPet(mokepons);
     };
     if (buttonFire && buttonWater && buttonEarth && buttonReload) {
         buttonFire.addEventListener('click', atackFire);
