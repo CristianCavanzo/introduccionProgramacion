@@ -1,7 +1,5 @@
 import random from './rockPapper.js';
-const buttonFire = document.getElementById('buttonFire');
-const buttonWater = document.getElementById('buttonWater');
-const buttonEarth = document.getElementById('buttonEarth');
+
 const buttonReload = document.getElementById('reload');
 const yourPet = document.getElementById('yourPet');
 
@@ -19,19 +17,69 @@ const containerMokepons = document.getElementById('containerMokepons');
 const containerParrafo = document.getElementById('message');
 
 type TypeAtacks = 'FUEGO' | 'TIERRA' | 'AGUA';
-const typeAtack: TypeAtacks[] = ['FUEGO', 'TIERRA', 'AGUA'];
+interface Attack {
+    type: TypeAtacks;
+    function: () => void;
+    weak: TypeAtacks[];
+}
 let ataqueJugador: TypeAtacks;
 let ataqueEnemigo: TypeAtacks;
 let yourPetLife = 3;
 let pcPetLife = 3;
-let opcionesDeMokepones;
 const mokepones = [];
+
+const containerAttacks = document.getElementById('containerAttacks');
+
+class Attacks {
+    constructor(public attacks: Attack[]) {}
+    create(attack: Attack) {
+        this.attacks.push(attack);
+    }
+    getbyName(name: TypeAtacks): Attack {
+        return this.attacks.find((attack) => attack.type === name) as Attack;
+    }
+
+    public get all(): Attack[] {
+        return this.attacks;
+    }
+}
+const attacks = new Attacks([]);
+const atackFire = () => {
+    ataqueJugador = 'FUEGO';
+    ataqueAleatorioEnemigo();
+    createMessage();
+};
+const atackEarth = () => {
+    ataqueJugador = 'TIERRA';
+    ataqueAleatorioEnemigo();
+    createMessage();
+};
+const atackWater = () => {
+    ataqueJugador = 'AGUA';
+    ataqueAleatorioEnemigo();
+    createMessage();
+};
+attacks.create({
+    type: 'AGUA',
+    function: atackWater,
+    weak: ['TIERRA'],
+});
+attacks.create({
+    type: 'FUEGO',
+    function: atackFire,
+    weak: ['AGUA'],
+});
+attacks.create({
+    type: 'TIERRA',
+    function: atackEarth,
+    weak: ['FUEGO'],
+});
 class Mokepon {
     constructor(
         public name: string,
         public foto: string,
         public vida: number,
-        public atacks: { nombre: TypeAtacks }[]
+        public attacks: Attack[]
     ) {}
 }
 
@@ -39,36 +87,27 @@ const hipodoge = new Mokepon(
     'hipodoge',
     '../assets/mokepons_mokepon_hipodoge_attack.png',
     3,
-    [
-        {
-            nombre: 'AGUA',
-        },
-    ]
+    [attacks.getbyName('AGUA')]
 );
 const capipepo = new Mokepon(
     'capipepo',
     '../assets/mokepons_mokepon_capipepo_attack.png',
     3,
-    [
-        {
-            nombre: 'TIERRA',
-        },
-    ]
+    [attacks.getbyName('TIERRA')]
 );
 const ratigueya = new Mokepon(
     'ratigueya',
     '../assets/mokepons_mokepon_ratigueya_attack.png',
     3,
-    [
-        {
-            nombre: 'FUEGO',
-        },
-    ]
+    [attacks.getbyName('FUEGO')]
 );
 mokepones.push(hipodoge, capipepo, ratigueya);
 
 const selectEnemyPet = (mokepons: NodeListOf<HTMLInputElement> | null) => {
-    let randomPet = random(0, mokepons?.length || 3);
+    let randomPet = random(
+        0,
+        (mokepons as NodeListOf<HTMLInputElement>).length - 1
+    );
 
     if (!mokepons) {
         return 'error';
@@ -81,11 +120,21 @@ const selectEnemyPet = (mokepons: NodeListOf<HTMLInputElement> | null) => {
         document.getElementById('selection-attack')?.classList.remove('none');
     }
 };
-
+const createAttacks = () => {
+    if (containerAttacks) {
+        attacks.all.forEach((type) => {
+            const button = document.createElement('button');
+            button.innerHTML = type.type;
+            button.value = type.type;
+            button.addEventListener('click', type.function);
+            containerAttacks.appendChild(button);
+        });
+    }
+};
 const ataqueAleatorioEnemigo = () => {
     const randomSelect = random(0, 2);
-    const atacks: TypeAtacks[] = ['FUEGO', 'TIERRA', 'AGUA'];
-    ataqueEnemigo = atacks[randomSelect];
+    const atacks = attacks.all;
+    ataqueEnemigo = atacks[randomSelect].type;
 };
 
 const changeLife = (container: 'yourPetLife' | 'pcPetLife') => {
@@ -100,13 +149,14 @@ const changeLife = (container: 'yourPetLife' | 'pcPetLife') => {
 };
 
 const result = () => {
-    const resultUser = typeAtack.findIndex((type) => type == ataqueJugador);
-    const resulPC = typeAtack.findIndex((type) => type == ataqueEnemigo);
-    const result = resultUser - resulPC;
-    if (result === -1 || result === 2) {
+    const weakUser = attacks.getbyName(ataqueJugador).weak;
+    const winPC = weakUser.some((attack) => {
+        return attack === ataqueEnemigo;
+    });
+    if (!winPC && ataqueJugador !== ataqueEnemigo) {
         changeLife('pcPetLife');
         return 'ganaste';
-    } else if (result === 0) {
+    } else if (ataqueJugador === ataqueEnemigo) {
         return 'empate';
     } else {
         changeLife('yourPetLife');
@@ -115,9 +165,11 @@ const result = () => {
 };
 
 const disableButtons = () => {
-    (buttonFire as HTMLButtonElement).disabled = true;
-    (buttonWater as HTMLButtonElement).disabled = true;
-    (buttonEarth as HTMLButtonElement).disabled = true;
+    if (containerAttacks) {
+        Array.from(containerAttacks.childNodes).map(
+            (attack) => ((attack as HTMLButtonElement).disabled = true)
+        );
+    }
     buttonReload?.classList.remove('none');
     buttonReload?.classList.add('reload');
 };
@@ -148,27 +200,12 @@ const createMessage = () => {
     resultCombat();
 };
 
-const atackFire = () => {
-    ataqueJugador = 'FUEGO';
-    ataqueAleatorioEnemigo();
-    createMessage();
-};
-const atackEarth = () => {
-    ataqueJugador = 'TIERRA';
-    ataqueAleatorioEnemigo();
-    createMessage();
-};
-const atackWater = () => {
-    ataqueJugador = 'AGUA';
-    ataqueAleatorioEnemigo();
-    createMessage();
-};
-
 const reload = () => {
     window.location.reload();
 };
 
 if (buttonPet) {
+    createAttacks();
     mokepones.forEach((mokepon) => {
         const name = mokepon.name;
         const input = document.createElement('input');
@@ -199,12 +236,5 @@ if (buttonPet) {
         }
         selectEnemyPet(mokepons);
     };
-    if (buttonFire && buttonWater && buttonEarth && buttonReload) {
-        buttonFire.addEventListener('click', atackFire);
-        buttonWater.addEventListener('click', atackWater);
-        buttonEarth.addEventListener('click', atackEarth);
-        buttonReload.addEventListener('click', reload);
-    }
-
     buttonPet.addEventListener('click', selectPetPlayer);
 }
