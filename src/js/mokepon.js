@@ -67,7 +67,11 @@ class Mokepon {
         this.attacks = attacks;
     }
 }
-const hipodoge = new Mokepon('hipodoge', '../assets/mokepons_mokepon_hipodoge_attack.png', 3, [attacks.getbyName('AGUA')]);
+const hipodoge = new Mokepon('hipodoge', '../assets/mokepons_mokepon_hipodoge_attack.png', 3, [
+    attacks.getbyName('AGUA'),
+    attacks.getbyName('AGUA'),
+    attacks.getbyName('AGUA'),
+]);
 const capipepo = new Mokepon('capipepo', '../assets/mokepons_mokepon_capipepo_attack.png', 3, [attacks.getbyName('TIERRA')]);
 const ratigueya = new Mokepon('ratigueya', '../assets/mokepons_mokepon_ratigueya_attack.png', 3, [attacks.getbyName('FUEGO')]);
 mokepones.push(hipodoge, capipepo, ratigueya);
@@ -86,13 +90,17 @@ const selectEnemyPet = (mokepons) => {
 };
 const createAttacks = () => {
     if (containerAttacks) {
-        attacks.all.forEach((type) => {
-            const button = document.createElement('button');
-            button.innerHTML = type.type;
-            button.value = type.type;
-            button.addEventListener('click', type.function);
-            containerAttacks.appendChild(button);
-        });
+        const mokeponSelected = mokepones.find((mokepon) => mokepon.name === (yourPet === null || yourPet === void 0 ? void 0 : yourPet.innerHTML));
+        console.log(mokeponSelected);
+        if (mokeponSelected) {
+            mokeponSelected.attacks.forEach((type) => {
+                const button = document.createElement('button');
+                button.innerHTML = type.type;
+                button.value = type.type;
+                button.addEventListener('click', type.function);
+                containerAttacks.appendChild(button);
+            });
+        }
     }
 };
 const ataqueAleatorioEnemigo = () => {
@@ -163,7 +171,6 @@ const reload = () => {
     window.location.reload();
 };
 if (buttonPet) {
-    createAttacks();
     mokepones.forEach((mokepon) => {
         const name = mokepon.name;
         const input = document.createElement('input');
@@ -188,6 +195,7 @@ if (buttonPet) {
         }
         if (yourPet) {
             yourPet.innerHTML = mokepon.value;
+            createAttacks();
         }
         selectEnemyPet(mokepons);
     };

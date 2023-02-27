@@ -26,7 +26,7 @@ let ataqueJugador: TypeAtacks;
 let ataqueEnemigo: TypeAtacks;
 let yourPetLife = 3;
 let pcPetLife = 3;
-const mokepones = [];
+const mokepones: Mokepon[] = [];
 
 const containerAttacks = document.getElementById('containerAttacks');
 
@@ -87,7 +87,11 @@ const hipodoge = new Mokepon(
     'hipodoge',
     '../assets/mokepons_mokepon_hipodoge_attack.png',
     3,
-    [attacks.getbyName('AGUA')]
+    [
+        attacks.getbyName('AGUA'),
+        attacks.getbyName('AGUA'),
+        attacks.getbyName('AGUA'),
+    ]
 );
 const capipepo = new Mokepon(
     'capipepo',
@@ -122,13 +126,18 @@ const selectEnemyPet = (mokepons: NodeListOf<HTMLInputElement> | null) => {
 };
 const createAttacks = () => {
     if (containerAttacks) {
-        attacks.all.forEach((type) => {
-            const button = document.createElement('button');
-            button.innerHTML = type.type;
-            button.value = type.type;
-            button.addEventListener('click', type.function);
-            containerAttacks.appendChild(button);
-        });
+        const mokeponSelected = mokepones.find(
+            (mokepon) => mokepon.name === yourPet?.innerHTML
+        );
+        if (mokeponSelected) {
+            mokeponSelected.attacks.forEach((type) => {
+                const button = document.createElement('button');
+                button.innerHTML = type.type;
+                button.value = type.type;
+                button.addEventListener('click', type.function);
+                containerAttacks.appendChild(button);
+            });
+        }
     }
 };
 const ataqueAleatorioEnemigo = () => {
@@ -205,7 +214,6 @@ const reload = () => {
 };
 
 if (buttonPet) {
-    createAttacks();
     mokepones.forEach((mokepon) => {
         const name = mokepon.name;
         const input = document.createElement('input');
@@ -233,6 +241,7 @@ if (buttonPet) {
         }
         if (yourPet) {
             yourPet.innerHTML = mokepon.value;
+            createAttacks();
         }
         selectEnemyPet(mokepons);
     };
