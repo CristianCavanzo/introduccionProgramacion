@@ -29,34 +29,41 @@ class Attacks {
     }
 }
 const attacks = new Attacks([]);
-const atackFire = () => {
+const disabledUsedButton = (event) => {
+    const element = event.target;
+    element.disabled = true;
+};
+const atackFire = (event) => {
     ataqueJugador = 'FUEGO';
+    disabledUsedButton(event);
     ataqueAleatorioEnemigo();
     createMessage();
 };
-const atackEarth = () => {
+const atackEarth = (event) => {
     ataqueJugador = 'TIERRA';
+    disabledUsedButton(event);
     ataqueAleatorioEnemigo();
     createMessage();
 };
-const atackWater = () => {
+const atackWater = (event) => {
     ataqueJugador = 'AGUA';
+    disabledUsedButton(event);
     ataqueAleatorioEnemigo();
     createMessage();
 };
 attacks.create({
     type: 'AGUA',
-    function: atackWater,
+    function: (event) => atackWater(event),
     weak: ['TIERRA'],
 });
 attacks.create({
     type: 'FUEGO',
-    function: atackFire,
+    function: (event) => atackFire(event),
     weak: ['AGUA'],
 });
 attacks.create({
     type: 'TIERRA',
-    function: atackEarth,
+    function: (event) => atackEarth(event),
     weak: ['FUEGO'],
 });
 class Mokepon {
@@ -91,13 +98,12 @@ const selectEnemyPet = (mokepons) => {
 const createAttacks = () => {
     if (containerAttacks) {
         const mokeponSelected = mokepones.find((mokepon) => mokepon.name === (yourPet === null || yourPet === void 0 ? void 0 : yourPet.innerHTML));
-        console.log(mokeponSelected);
         if (mokeponSelected) {
             mokeponSelected.attacks.forEach((type) => {
                 const button = document.createElement('button');
                 button.innerHTML = type.type;
                 button.value = type.type;
-                button.addEventListener('click', type.function);
+                button.addEventListener('click', (event) => type.function(event));
                 containerAttacks.appendChild(button);
             });
         }

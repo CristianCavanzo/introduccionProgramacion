@@ -19,8 +19,8 @@ const containerParrafo = document.getElementById('message');
 type TypeAtacks = 'FUEGO' | 'TIERRA' | 'AGUA';
 interface Attack {
     type: TypeAtacks;
-    function: () => void;
     weak: TypeAtacks[];
+    function: (event: Event) => void;
 }
 let ataqueJugador: TypeAtacks;
 let ataqueEnemigo: TypeAtacks;
@@ -44,34 +44,42 @@ class Attacks {
     }
 }
 const attacks = new Attacks([]);
-const atackFire = () => {
+const disabledUsedButton = (event: Event) => {
+    const element = event.target as HTMLButtonElement;
+    element.disabled = true;
+};
+
+const atackFire = (event: Event) => {
     ataqueJugador = 'FUEGO';
+    disabledUsedButton(event);
     ataqueAleatorioEnemigo();
     createMessage();
 };
-const atackEarth = () => {
+const atackEarth = (event: Event) => {
     ataqueJugador = 'TIERRA';
+    disabledUsedButton(event);
     ataqueAleatorioEnemigo();
     createMessage();
 };
-const atackWater = () => {
+const atackWater = (event: Event) => {
     ataqueJugador = 'AGUA';
+    disabledUsedButton(event);
     ataqueAleatorioEnemigo();
     createMessage();
 };
 attacks.create({
     type: 'AGUA',
-    function: atackWater,
+    function: (event) => atackWater(event),
     weak: ['TIERRA'],
 });
 attacks.create({
     type: 'FUEGO',
-    function: atackFire,
+    function: (event) => atackFire(event),
     weak: ['AGUA'],
 });
 attacks.create({
     type: 'TIERRA',
-    function: atackEarth,
+    function: (event) => atackEarth(event),
     weak: ['FUEGO'],
 });
 class Mokepon {
@@ -134,7 +142,9 @@ const createAttacks = () => {
                 const button = document.createElement('button');
                 button.innerHTML = type.type;
                 button.value = type.type;
-                button.addEventListener('click', type.function);
+                button.addEventListener('click', (event: Event) =>
+                    type.function(event)
+                );
                 containerAttacks.appendChild(button);
             });
         }
