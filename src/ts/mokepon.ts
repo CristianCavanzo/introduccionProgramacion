@@ -27,7 +27,7 @@ let ataqueEnemigo: TypeAtacks;
 let yourPetLife = 3;
 let pcPetLife = 3;
 const mokepones: Mokepon[] = [];
-
+let turno = 0;
 const containerAttacks = document.getElementById('containerAttacks');
 
 class Attacks {
@@ -99,19 +99,33 @@ const hipodoge = new Mokepon(
         attacks.getbyName('AGUA'),
         attacks.getbyName('AGUA'),
         attacks.getbyName('AGUA'),
+        attacks.getbyName('FUEGO'),
+        attacks.getbyName('TIERRA'),
     ]
 );
 const capipepo = new Mokepon(
     'capipepo',
     '../assets/mokepons_mokepon_capipepo_attack.png',
     3,
-    [attacks.getbyName('TIERRA')]
+    [
+        attacks.getbyName('TIERRA'),
+        attacks.getbyName('TIERRA'),
+        attacks.getbyName('TIERRA'),
+        attacks.getbyName('FUEGO'),
+        attacks.getbyName('AGUA'),
+    ]
 );
 const ratigueya = new Mokepon(
     'ratigueya',
     '../assets/mokepons_mokepon_ratigueya_attack.png',
     3,
-    [attacks.getbyName('FUEGO')]
+    [
+        attacks.getbyName('FUEGO'),
+        attacks.getbyName('FUEGO'),
+        attacks.getbyName('FUEGO'),
+        attacks.getbyName('AGUA'),
+        attacks.getbyName('TIERRA'),
+    ]
 );
 mokepones.push(hipodoge, capipepo, ratigueya);
 
@@ -172,6 +186,7 @@ const result = () => {
     const winPC = weakUser.some((attack) => {
         return attack === ataqueEnemigo;
     });
+    ++turno;
     if (!winPC && ataqueJugador !== ataqueEnemigo) {
         changeLife('pcPetLife');
         return 'ganaste';
@@ -189,8 +204,8 @@ const disableButtons = () => {
             (attack) => ((attack as HTMLButtonElement).disabled = true)
         );
     }
+    console.log('entra');
     buttonReload?.classList.remove('none');
-    buttonReload?.classList.add('reload');
 };
 
 const resultCombat = () => {
@@ -200,6 +215,8 @@ const resultCombat = () => {
         disableButtons();
     } else if (yourPetLife === 0) {
         parrafo.innerHTML = `PERDISTE :c`;
+        disableButtons();
+    } else if (turno === 5) {
         disableButtons();
     }
     containerParrafo?.appendChild(parrafo);
@@ -211,7 +228,7 @@ const createMessage = () => {
 
     parrafoPlayer.innerHTML = ataqueJugador;
     parrafoPC.innerHTML = ataqueEnemigo;
-    if (pcPetLife !== 0 && yourPetLife !== 0) {
+    if ((pcPetLife !== 0 && yourPetLife !== 0) || turno !== 4) {
         resultado.innerHTML = result();
         attackPlayer?.appendChild(parrafoPlayer);
         attackPC?.appendChild(parrafoPC);
@@ -256,4 +273,5 @@ if (buttonPet) {
         selectEnemyPet(mokepons);
     };
     buttonPet.addEventListener('click', selectPetPlayer);
+    buttonReload?.addEventListener('click', () => window.location.reload());
 }

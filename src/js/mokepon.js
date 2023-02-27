@@ -13,6 +13,7 @@ let ataqueEnemigo;
 let yourPetLife = 3;
 let pcPetLife = 3;
 const mokepones = [];
+let turno = 0;
 const containerAttacks = document.getElementById('containerAttacks');
 class Attacks {
     constructor(attacks) {
@@ -78,9 +79,23 @@ const hipodoge = new Mokepon('hipodoge', '../assets/mokepons_mokepon_hipodoge_at
     attacks.getbyName('AGUA'),
     attacks.getbyName('AGUA'),
     attacks.getbyName('AGUA'),
+    attacks.getbyName('FUEGO'),
+    attacks.getbyName('TIERRA'),
 ]);
-const capipepo = new Mokepon('capipepo', '../assets/mokepons_mokepon_capipepo_attack.png', 3, [attacks.getbyName('TIERRA')]);
-const ratigueya = new Mokepon('ratigueya', '../assets/mokepons_mokepon_ratigueya_attack.png', 3, [attacks.getbyName('FUEGO')]);
+const capipepo = new Mokepon('capipepo', '../assets/mokepons_mokepon_capipepo_attack.png', 3, [
+    attacks.getbyName('TIERRA'),
+    attacks.getbyName('TIERRA'),
+    attacks.getbyName('TIERRA'),
+    attacks.getbyName('FUEGO'),
+    attacks.getbyName('AGUA'),
+]);
+const ratigueya = new Mokepon('ratigueya', '../assets/mokepons_mokepon_ratigueya_attack.png', 3, [
+    attacks.getbyName('FUEGO'),
+    attacks.getbyName('FUEGO'),
+    attacks.getbyName('FUEGO'),
+    attacks.getbyName('AGUA'),
+    attacks.getbyName('TIERRA'),
+]);
 mokepones.push(hipodoge, capipepo, ratigueya);
 const selectEnemyPet = (mokepons) => {
     var _a, _b;
@@ -130,6 +145,7 @@ const result = () => {
     const winPC = weakUser.some((attack) => {
         return attack === ataqueEnemigo;
     });
+    ++turno;
     if (!winPC && ataqueJugador !== ataqueEnemigo) {
         changeLife('pcPetLife');
         return 'ganaste';
@@ -146,8 +162,8 @@ const disableButtons = () => {
     if (containerAttacks) {
         Array.from(containerAttacks.childNodes).map((attack) => (attack.disabled = true));
     }
+    console.log('entra');
     buttonReload === null || buttonReload === void 0 ? void 0 : buttonReload.classList.remove('none');
-    buttonReload === null || buttonReload === void 0 ? void 0 : buttonReload.classList.add('reload');
 };
 const resultCombat = () => {
     const parrafo = document.createElement('p');
@@ -159,6 +175,9 @@ const resultCombat = () => {
         parrafo.innerHTML = `PERDISTE :c`;
         disableButtons();
     }
+    else if (turno === 5) {
+        disableButtons();
+    }
     containerParrafo === null || containerParrafo === void 0 ? void 0 : containerParrafo.appendChild(parrafo);
 };
 const createMessage = () => {
@@ -166,7 +185,7 @@ const createMessage = () => {
     const parrafoPC = document.createElement('p');
     parrafoPlayer.innerHTML = ataqueJugador;
     parrafoPC.innerHTML = ataqueEnemigo;
-    if (pcPetLife !== 0 && yourPetLife !== 0) {
+    if ((pcPetLife !== 0 && yourPetLife !== 0) || turno !== 4) {
         resultado.innerHTML = result();
         attackPlayer === null || attackPlayer === void 0 ? void 0 : attackPlayer.appendChild(parrafoPlayer);
         attackPC === null || attackPC === void 0 ? void 0 : attackPC.appendChild(parrafoPC);
@@ -206,4 +225,5 @@ if (buttonPet) {
         selectEnemyPet(mokepons);
     };
     buttonPet.addEventListener('click', selectPetPlayer);
+    buttonReload === null || buttonReload === void 0 ? void 0 : buttonReload.addEventListener('click', () => window.location.reload());
 }
