@@ -204,19 +204,24 @@ const disableButtons = () => {
             (attack) => ((attack as HTMLButtonElement).disabled = true)
         );
     }
-    console.log('entra');
     buttonReload?.classList.remove('none');
 };
 
 const resultCombat = () => {
     const parrafo = document.createElement('p');
-    if (pcPetLife === 0) {
-        parrafo.innerHTML = `GANASTE`;
-        disableButtons();
-    } else if (yourPetLife === 0) {
-        parrafo.innerHTML = `PERDISTE :c`;
-        disableButtons();
-    } else if (turno === 5) {
+    let result = '';
+    if (pcPetLife > yourPetLife) {
+        result = 'Perdiste';
+    } else if (pcPetLife < yourPetLife) {
+        result = 'Ganaste';
+    } else {
+        result = 'Empate';
+    }
+    const text = `Ganaste ${3 - pcPetLife} veces y perdiste ${
+        3 - yourPetLife
+    }. El resultado de la batalla es: ${result}`;
+    if (pcPetLife === 0 || yourPetLife === 0 || turno === 5) {
+        parrafo.innerHTML = text;
         disableButtons();
     }
     containerParrafo?.appendChild(parrafo);

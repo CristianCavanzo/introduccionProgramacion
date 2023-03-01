@@ -162,20 +162,23 @@ const disableButtons = () => {
     if (containerAttacks) {
         Array.from(containerAttacks.childNodes).map((attack) => (attack.disabled = true));
     }
-    console.log('entra');
     buttonReload === null || buttonReload === void 0 ? void 0 : buttonReload.classList.remove('none');
 };
 const resultCombat = () => {
     const parrafo = document.createElement('p');
-    if (pcPetLife === 0) {
-        parrafo.innerHTML = `GANASTE`;
-        disableButtons();
+    let result = '';
+    if (pcPetLife > yourPetLife) {
+        result = 'Perdiste';
     }
-    else if (yourPetLife === 0) {
-        parrafo.innerHTML = `PERDISTE :c`;
-        disableButtons();
+    else if (pcPetLife < yourPetLife) {
+        result = 'Ganaste';
     }
-    else if (turno === 5) {
+    else {
+        result = 'Empate';
+    }
+    const text = `Ganaste ${3 - pcPetLife} veces y perdiste ${3 - yourPetLife}. El resultado de la batalla es: ${result}`;
+    if (pcPetLife === 0 || yourPetLife === 0 || turno === 5) {
+        parrafo.innerHTML = text;
         disableButtons();
     }
     containerParrafo === null || containerParrafo === void 0 ? void 0 : containerParrafo.appendChild(parrafo);
