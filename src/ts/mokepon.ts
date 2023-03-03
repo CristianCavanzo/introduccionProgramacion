@@ -30,6 +30,15 @@ const mokepones: Mokepon[] = [];
 let turno = 0;
 const containerAttacks = document.getElementById('containerAttacks');
 
+const sectionMap = document.getElementById('sectionMap');
+const map = document.getElementById('map') as HTMLCanvasElement;
+const lienzo = map?.getContext('2d');
+
+const moveUpButton = document.getElementById('moveUp');
+const moveLeftButton = document.getElementById('moveLeft');
+const moveDownButton = document.getElementById('moveDown');
+const moveRigthButton = document.getElementById('moveRigth');
+
 class Attacks {
     constructor(public attacks: Attack[]) {}
     create(attack: Attack) {
@@ -87,8 +96,17 @@ class Mokepon {
         public name: string,
         public foto: string,
         public vida: number,
-        public attacks: Attack[]
-    ) {}
+        public attacks: Attack[],
+        public x = 20,
+        public y = 30,
+        public ancho = 80,
+        public alto = 80,
+        public mapaFoto = new Image(),
+        public velocidadX = 0,
+        public velocidadY = 0
+    ) {
+        this.mapaFoto.src = this.foto;
+    }
 }
 
 const hipodoge = new Mokepon(
@@ -143,7 +161,8 @@ const selectEnemyPet = (mokepons: NodeListOf<HTMLInputElement> | null) => {
     if (enemyPet) {
         enemyPet.innerHTML = selection.value;
         document.getElementById('selectPet')?.classList.add('none');
-        document.getElementById('selection-attack')?.classList.remove('none');
+        // document.getElementById('selection-attack')?.classList.remove('none');
+        sectionMap?.classList.remove('none');
     }
 };
 const createAttacks = () => {
@@ -245,6 +264,87 @@ const reload = () => {
     window.location.reload();
 };
 
+const pintarPersonaje = () => {
+    capipepo.x = capipepo.x + capipepo.velocidadX;
+    capipepo.y = capipepo.y + capipepo.velocidadY;
+    console.log(capipepo.velocidadX, capipepo.velocidadY);
+    lienzo?.clearRect(0, 0, map.width, map.height);
+    lienzo?.drawImage(
+        capipepo.mapaFoto,
+        capipepo.x,
+        capipepo.y,
+        capipepo.ancho,
+        capipepo.alto
+    );
+};
+pintarPersonaje();
+const detenerMovimiento = () => {
+    capipepo.velocidadX = 0;
+    capipepo.velocidadY = 0;
+};
+const moveUp = () => {
+    capipepo.velocidadY = -5;
+};
+const moveLeft = () => {
+    capipepo.velocidadX = -5;
+};
+const moveDown = () => {
+    capipepo.velocidadY = 5;
+    console.log(capipepo);
+};
+const moveRigth = () => {
+    capipepo.velocidadX = 5;
+    console.log(capipepo);
+};
+
+if (moveUpButton && moveLeftButton && moveDownButton && moveRigthButton) {
+    setInterval(pintarPersonaje, 100);
+    moveUpButton.addEventListener('mousedown', moveUp);
+    moveLeftButton.addEventListener('mousedown', moveLeft);
+    moveDownButton.addEventListener('mousedown', moveDown);
+    moveRigthButton.addEventListener('mousedown', moveRigth);
+    moveUpButton.addEventListener('mouseup', detenerMovimiento);
+    moveLeftButton.addEventListener('mouseup', detenerMovimiento);
+    moveDownButton.addEventListener('mouseup', detenerMovimiento);
+    moveRigthButton.addEventListener('mouseup', detenerMovimiento);
+    document.onkeydown = (e) => {
+        type Keys = 'ArrowDown' | 'ArrowUp' | 'ArrowLeft' | 'ArrowRight';
+        const keypress: Keys = e.key as Keys;
+        switch (keypress) {
+            case 'ArrowDown':
+                moveDown();
+                break;
+            case 'ArrowUp':
+                moveUp();
+                break;
+            case 'ArrowLeft':
+                moveLeft();
+                break;
+            case 'ArrowRight':
+                moveRigth();
+                break;
+        }
+    };
+    document.onkeyup = (e) => {
+        type Keys = 'ArrowDown' | 'ArrowUp' | 'ArrowLeft' | 'ArrowRight';
+        const keypress: Keys = e.key as Keys;
+        switch (keypress) {
+            case 'ArrowDown':
+                detenerMovimiento();
+                break;
+            case 'ArrowUp':
+                detenerMovimiento();
+                break;
+            case 'ArrowLeft':
+                detenerMovimiento();
+                break;
+            case 'ArrowRight':
+                detenerMovimiento();
+                break;
+        }
+    };
+}
+
 if (buttonPet) {
     mokepones.forEach((mokepon) => {
         const name = mokepon.name;
@@ -278,5 +378,5 @@ if (buttonPet) {
         selectEnemyPet(mokepons);
     };
     buttonPet.addEventListener('click', selectPetPlayer);
-    buttonReload?.addEventListener('click', () => window.location.reload());
+    buttonReload?.addEventListener('click', reload);
 }

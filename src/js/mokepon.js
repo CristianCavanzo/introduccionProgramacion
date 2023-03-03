@@ -15,6 +15,13 @@ let pcPetLife = 3;
 const mokepones = [];
 let turno = 0;
 const containerAttacks = document.getElementById('containerAttacks');
+const sectionMap = document.getElementById('sectionMap');
+const map = document.getElementById('map');
+const lienzo = map === null || map === void 0 ? void 0 : map.getContext('2d');
+const moveUpButton = document.getElementById('moveUp');
+const moveLeftButton = document.getElementById('moveLeft');
+const moveDownButton = document.getElementById('moveDown');
+const moveRigthButton = document.getElementById('moveRigth');
 class Attacks {
     constructor(attacks) {
         this.attacks = attacks;
@@ -68,11 +75,19 @@ attacks.create({
     weak: ['FUEGO'],
 });
 class Mokepon {
-    constructor(name, foto, vida, attacks) {
+    constructor(name, foto, vida, attacks, x = 20, y = 30, ancho = 80, alto = 80, mapaFoto = new Image(), velocidadX = 0, velocidadY = 0) {
         this.name = name;
         this.foto = foto;
         this.vida = vida;
         this.attacks = attacks;
+        this.x = x;
+        this.y = y;
+        this.ancho = ancho;
+        this.alto = alto;
+        this.mapaFoto = mapaFoto;
+        this.velocidadX = velocidadX;
+        this.velocidadY = velocidadY;
+        this.mapaFoto.src = this.foto;
     }
 }
 const hipodoge = new Mokepon('hipodoge', '../assets/mokepons_mokepon_hipodoge_attack.png', 3, [
@@ -98,7 +113,7 @@ const ratigueya = new Mokepon('ratigueya', '../assets/mokepons_mokepon_ratigueya
 ]);
 mokepones.push(hipodoge, capipepo, ratigueya);
 const selectEnemyPet = (mokepons) => {
-    var _a, _b;
+    var _a;
     let randomPet = random(0, mokepons.length - 1);
     if (!mokepons) {
         return 'error';
@@ -107,7 +122,8 @@ const selectEnemyPet = (mokepons) => {
     if (enemyPet) {
         enemyPet.innerHTML = selection.value;
         (_a = document.getElementById('selectPet')) === null || _a === void 0 ? void 0 : _a.classList.add('none');
-        (_b = document.getElementById('selection-attack')) === null || _b === void 0 ? void 0 : _b.classList.remove('none');
+        // document.getElementById('selection-attack')?.classList.remove('none');
+        sectionMap === null || sectionMap === void 0 ? void 0 : sectionMap.classList.remove('none');
     }
 };
 const createAttacks = () => {
@@ -198,6 +214,77 @@ const createMessage = () => {
 const reload = () => {
     window.location.reload();
 };
+const pintarPersonaje = () => {
+    capipepo.x = capipepo.x + capipepo.velocidadX;
+    capipepo.y = capipepo.y + capipepo.velocidadY;
+    console.log(capipepo.velocidadX, capipepo.velocidadY);
+    lienzo === null || lienzo === void 0 ? void 0 : lienzo.clearRect(0, 0, map.width, map.height);
+    lienzo === null || lienzo === void 0 ? void 0 : lienzo.drawImage(capipepo.mapaFoto, capipepo.x, capipepo.y, capipepo.ancho, capipepo.alto);
+};
+pintarPersonaje();
+const detenerMovimiento = () => {
+    capipepo.velocidadX = 0;
+    capipepo.velocidadY = 0;
+};
+const moveUp = () => {
+    capipepo.velocidadY = -5;
+};
+const moveLeft = () => {
+    capipepo.velocidadX = -5;
+};
+const moveDown = () => {
+    capipepo.velocidadY = 5;
+    console.log(capipepo);
+};
+const moveRigth = () => {
+    capipepo.velocidadX = 5;
+    console.log(capipepo);
+};
+if (moveUpButton && moveLeftButton && moveDownButton && moveRigthButton) {
+    setInterval(pintarPersonaje, 100);
+    moveUpButton.addEventListener('mousedown', moveUp);
+    moveLeftButton.addEventListener('mousedown', moveLeft);
+    moveDownButton.addEventListener('mousedown', moveDown);
+    moveRigthButton.addEventListener('mousedown', moveRigth);
+    moveUpButton.addEventListener('mouseup', detenerMovimiento);
+    moveLeftButton.addEventListener('mouseup', detenerMovimiento);
+    moveDownButton.addEventListener('mouseup', detenerMovimiento);
+    moveRigthButton.addEventListener('mouseup', detenerMovimiento);
+    document.onkeydown = (e) => {
+        const keypress = e.key;
+        switch (keypress) {
+            case 'ArrowDown':
+                moveDown();
+                break;
+            case 'ArrowUp':
+                moveUp();
+                break;
+            case 'ArrowLeft':
+                moveLeft();
+                break;
+            case 'ArrowRight':
+                moveRigth();
+                break;
+        }
+    };
+    document.onkeyup = (e) => {
+        const keypress = e.key;
+        switch (keypress) {
+            case 'ArrowDown':
+                detenerMovimiento();
+                break;
+            case 'ArrowUp':
+                detenerMovimiento();
+                break;
+            case 'ArrowLeft':
+                detenerMovimiento();
+                break;
+            case 'ArrowRight':
+                detenerMovimiento();
+                break;
+        }
+    };
+}
 if (buttonPet) {
     mokepones.forEach((mokepon) => {
         const name = mokepon.name;
@@ -228,5 +315,5 @@ if (buttonPet) {
         selectEnemyPet(mokepons);
     };
     buttonPet.addEventListener('click', selectPetPlayer);
-    buttonReload === null || buttonReload === void 0 ? void 0 : buttonReload.addEventListener('click', () => window.location.reload());
+    buttonReload === null || buttonReload === void 0 ? void 0 : buttonReload.addEventListener('click', reload);
 }

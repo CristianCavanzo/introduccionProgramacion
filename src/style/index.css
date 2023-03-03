@@ -148,7 +148,13 @@ h2 {
     text-transform: capitalize;
     font-size: 24px;
 }
-
+.sectionMap {
+    display: flex;
+    align-items: center;
+}
+.map {
+    border: 2px solid #000;
+}
 @media (max-width: 768px) {
     .information {
         grid-template-columns: 1fr;
