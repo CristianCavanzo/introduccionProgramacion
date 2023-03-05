@@ -38,7 +38,8 @@ const moveUpButton = document.getElementById('moveUp');
 const moveLeftButton = document.getElementById('moveLeft');
 const moveDownButton = document.getElementById('moveDown');
 const moveRigthButton = document.getElementById('moveRigth');
-
+const mapBackground = new Image();
+mapBackground.src = '../assets/mokemap.png';
 class Attacks {
     constructor(public attacks: Attack[]) {}
     create(attack: Attack) {
@@ -97,15 +98,19 @@ class Mokepon {
         public foto: string,
         public vida: number,
         public attacks: Attack[],
+        public fotoMapa: string,
         public x = 20,
         public y = 30,
-        public ancho = 80,
-        public alto = 80,
+        public ancho = 40,
+        public alto = 40,
         public mapaFoto = new Image(),
         public velocidadX = 0,
         public velocidadY = 0
     ) {
-        this.mapaFoto.src = this.foto;
+        this.mapaFoto.src = this.fotoMapa;
+    }
+    pintarMokepon() {
+        lienzo?.drawImage(this.mapaFoto, this.x, this.y, this.ancho, this.alto);
     }
 }
 
@@ -119,7 +124,8 @@ const hipodoge = new Mokepon(
         attacks.getbyName('AGUA'),
         attacks.getbyName('FUEGO'),
         attacks.getbyName('TIERRA'),
-    ]
+    ],
+    '../assets/hipodoge.png'
 );
 const capipepo = new Mokepon(
     'capipepo',
@@ -131,7 +137,8 @@ const capipepo = new Mokepon(
         attacks.getbyName('TIERRA'),
         attacks.getbyName('FUEGO'),
         attacks.getbyName('AGUA'),
-    ]
+    ],
+    '../assets/capipepo.png'
 );
 const ratigueya = new Mokepon(
     'ratigueya',
@@ -143,9 +150,12 @@ const ratigueya = new Mokepon(
         attacks.getbyName('FUEGO'),
         attacks.getbyName('AGUA'),
         attacks.getbyName('TIERRA'),
-    ]
+    ],
+    '../assets/ratigueya.png'
 );
 mokepones.push(hipodoge, capipepo, ratigueya);
+let yourMokeponSelection: Mokepon;
+let enemyMokeponSelection: Mokepon;
 
 const selectEnemyPet = (mokepons: NodeListOf<HTMLInputElement> | null) => {
     let randomPet = random(
@@ -163,6 +173,11 @@ const selectEnemyPet = (mokepons: NodeListOf<HTMLInputElement> | null) => {
         document.getElementById('selectPet')?.classList.add('none');
         // document.getElementById('selection-attack')?.classList.remove('none');
         sectionMap?.classList.remove('none');
+        enemyMokeponSelection = mokepones.find(
+            (mokepon) => mokepon.name === enemyPet.innerHTML
+        ) as Mokepon;
+        enemyMokeponSelection.x = random(0, map.width);
+        enemyMokeponSelection.y = random(0, map.height);
     }
 };
 const createAttacks = () => {
@@ -264,41 +279,38 @@ const reload = () => {
     window.location.reload();
 };
 
-const pintarPersonaje = () => {
-    capipepo.x = capipepo.x + capipepo.velocidadX;
-    capipepo.y = capipepo.y + capipepo.velocidadY;
-    console.log(capipepo.velocidadX, capipepo.velocidadY);
+const pintarCanvas = () => {
+    if (!yourMokeponSelection) {
+        return;
+    }
+    yourMokeponSelection.x =
+        yourMokeponSelection.x + yourMokeponSelection.velocidadX;
+    yourMokeponSelection.y =
+        yourMokeponSelection.y + yourMokeponSelection.velocidadY;
     lienzo?.clearRect(0, 0, map.width, map.height);
-    lienzo?.drawImage(
-        capipepo.mapaFoto,
-        capipepo.x,
-        capipepo.y,
-        capipepo.ancho,
-        capipepo.alto
-    );
+    lienzo?.drawImage(mapBackground, 0, 0, map.width, map.height);
+    yourMokeponSelection.pintarMokepon();
+    enemyMokeponSelection.pintarMokepon();
 };
-pintarPersonaje();
 const detenerMovimiento = () => {
-    capipepo.velocidadX = 0;
-    capipepo.velocidadY = 0;
+    yourMokeponSelection.velocidadX = 0;
+    yourMokeponSelection.velocidadY = 0;
 };
 const moveUp = () => {
-    capipepo.velocidadY = -5;
+    yourMokeponSelection.velocidadY = -5;
 };
 const moveLeft = () => {
-    capipepo.velocidadX = -5;
+    yourMokeponSelection.velocidadX = -5;
 };
 const moveDown = () => {
-    capipepo.velocidadY = 5;
-    console.log(capipepo);
+    yourMokeponSelection.velocidadY = 5;
 };
 const moveRigth = () => {
-    capipepo.velocidadX = 5;
-    console.log(capipepo);
+    yourMokeponSelection.velocidadX = 5;
 };
 
 if (moveUpButton && moveLeftButton && moveDownButton && moveRigthButton) {
-    setInterval(pintarPersonaje, 100);
+    setInterval(pintarCanvas, 100);
     moveUpButton.addEventListener('mousedown', moveUp);
     moveLeftButton.addEventListener('mousedown', moveLeft);
     moveDownButton.addEventListener('mousedown', moveDown);
@@ -346,6 +358,8 @@ if (moveUpButton && moveLeftButton && moveDownButton && moveRigthButton) {
 }
 
 if (buttonPet) {
+    map.width = 320;
+    map.height = 240;
     mokepones.forEach((mokepon) => {
         const name = mokepon.name;
         const input = document.createElement('input');
@@ -373,6 +387,9 @@ if (buttonPet) {
         }
         if (yourPet) {
             yourPet.innerHTML = mokepon.value;
+            yourMokeponSelection = mokepones.find(
+                (mokepon) => mokepon.name === yourPet?.innerHTML
+            ) as Mokepon;
             createAttacks();
         }
         selectEnemyPet(mokepons);
