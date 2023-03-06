@@ -41,6 +41,16 @@ const moveRigthButton = document.getElementById('moveRigth');
 const mapBackground = new Image();
 mapBackground.src = '../assets/mokemap.png';
 let intervalo: number;
+
+let alturaDelMapa;
+let anchoDelMapa = window.innerWidth - 200;
+const maxWidth = 350;
+if (anchoDelMapa > maxWidth) {
+    anchoDelMapa = maxWidth - 20;
+}
+alturaDelMapa = (anchoDelMapa * 600) / 800;
+map.width = anchoDelMapa;
+map.height = alturaDelMapa;
 class Attacks {
     constructor(public attacks: Attack[]) {}
     create(attack: Attack) {
@@ -100,8 +110,8 @@ class Mokepon {
         public vida: number,
         public attacks: Attack[],
         public fotoMapa: string,
-        public x = 20,
-        public y = 30,
+        public x = random(0, map.width - 40),
+        public y = random(0, map.height - 40),
         public ancho = 40,
         public alto = 40,
         public mapaFoto = new Image(),
@@ -397,8 +407,6 @@ if (moveUpButton && moveLeftButton && moveDownButton && moveRigthButton) {
 }
 
 if (buttonPet) {
-    map.width = 320;
-    map.height = 240;
     mokepones.forEach((mokepon) => {
         const name = mokepon.name;
         const input = document.createElement('input');

@@ -155,6 +155,13 @@ h2 {
 .map {
     border: 2px solid #000;
 }
+.containerMap {
+    display: flex;
+    flex-wrap: wrap;
+}
+.containerMap div {
+    width: 50%;
+}
 @media (max-width: 768px) {
     .information {
         grid-template-columns: 1fr;
