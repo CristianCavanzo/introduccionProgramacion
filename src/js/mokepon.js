@@ -24,6 +24,7 @@ const moveDownButton = document.getElementById('moveDown');
 const moveRigthButton = document.getElementById('moveRigth');
 const mapBackground = new Image();
 mapBackground.src = '../assets/mokemap.png';
+let intervalo;
 class Attacks {
     constructor(attacks) {
         this.attacks = attacks;
@@ -130,9 +131,10 @@ const selectEnemyPet = (mokepons) => {
     if (enemyPet) {
         enemyPet.innerHTML = selection.value;
         (_a = document.getElementById('selectPet')) === null || _a === void 0 ? void 0 : _a.classList.add('none');
-        // document.getElementById('selection-attack')?.classList.remove('none');
         sectionMap === null || sectionMap === void 0 ? void 0 : sectionMap.classList.remove('none');
-        enemyMokeponSelection = mokepones.find((mokepon) => mokepon.name === enemyPet.innerHTML);
+        const randomEnemy = mokepones.find((mokepon) => mokepon.name === enemyPet.innerHTML);
+        const clone = Object.assign(Object.create(Object.getPrototypeOf(randomEnemy)), randomEnemy);
+        enemyMokeponSelection = clone;
         enemyMokeponSelection.x = random(0, map.width);
         enemyMokeponSelection.y = random(0, map.height);
     }
@@ -152,9 +154,9 @@ const createAttacks = () => {
     }
 };
 const ataqueAleatorioEnemigo = () => {
-    const randomSelect = random(0, 2);
-    const atacks = attacks.all;
-    ataqueEnemigo = atacks[randomSelect].type;
+    const randomSelect = random(0, enemyMokeponSelection.attacks.length - 1);
+    ataqueEnemigo = enemyMokeponSelection.attacks[randomSelect].type;
+    enemyMokeponSelection.attacks.splice(randomSelect, 1);
 };
 const changeLife = (container) => {
     const containerLife = document.getElementById(container);
@@ -225,9 +227,38 @@ const createMessage = () => {
 const reload = () => {
     window.location.reload();
 };
+const detenerMovimiento = () => {
+    yourMokeponSelection.velocidadX = 0;
+    yourMokeponSelection.velocidadY = 0;
+};
+const revisarColision = (enemigo, mascota) => {
+    var _a, _b;
+    const arribaEnemigo = enemigo.y;
+    const abajoEnemigo = enemigo.y + enemigo.alto;
+    const izquierdaEnemigo = enemigo.x;
+    const derechaEnemigo = enemigo.x + enemigo.ancho;
+    const arribaMascota = mascota.y;
+    const abajoMascota = mascota.y + mascota.alto;
+    const izquierdaMascota = mascota.x;
+    const derechaMascota = mascota.x + mascota.ancho;
+    if (abajoMascota < arribaEnemigo ||
+        arribaMascota > abajoEnemigo ||
+        derechaMascota < izquierdaEnemigo ||
+        izquierdaMascota > derechaEnemigo) {
+        return;
+    }
+    detenerMovimiento();
+    (_a = document.getElementById('selection-attack')) === null || _a === void 0 ? void 0 : _a.classList.remove('none');
+    (_b = document.getElementById('sectionMap')) === null || _b === void 0 ? void 0 : _b.classList.add('none');
+    clearInterval(intervalo);
+};
 const pintarCanvas = () => {
     if (!yourMokeponSelection) {
         return;
+    }
+    if (yourMokeponSelection.velocidadX !== 0 ||
+        yourMokeponSelection.velocidadY !== 0) {
+        revisarColision(enemyMokeponSelection, yourMokeponSelection);
     }
     yourMokeponSelection.x =
         yourMokeponSelection.x + yourMokeponSelection.velocidadX;
@@ -237,10 +268,6 @@ const pintarCanvas = () => {
     lienzo === null || lienzo === void 0 ? void 0 : lienzo.drawImage(mapBackground, 0, 0, map.width, map.height);
     yourMokeponSelection.pintarMokepon();
     enemyMokeponSelection.pintarMokepon();
-};
-const detenerMovimiento = () => {
-    yourMokeponSelection.velocidadX = 0;
-    yourMokeponSelection.velocidadY = 0;
 };
 const moveUp = () => {
     yourMokeponSelection.velocidadY = -5;
@@ -255,7 +282,7 @@ const moveRigth = () => {
     yourMokeponSelection.velocidadX = 5;
 };
 if (moveUpButton && moveLeftButton && moveDownButton && moveRigthButton) {
-    setInterval(pintarCanvas, 100);
+    intervalo = setInterval(pintarCanvas, 100);
     moveUpButton.addEventListener('mousedown', moveUp);
     moveLeftButton.addEventListener('mousedown', moveLeft);
     moveDownButton.addEventListener('mousedown', moveDown);
