@@ -1,5 +1,4 @@
 import random from './rockPapper.js';
-
 const buttonReload = document.getElementById('reload');
 const yourPet = document.getElementById('yourPet');
 
@@ -40,7 +39,8 @@ const moveDownButton = document.getElementById('moveDown');
 const moveRigthButton = document.getElementById('moveRigth');
 const mapBackground = new Image();
 mapBackground.src = '../assets/mokemap.png';
-let intervalo: number;
+let intervalo: string | number | NodeJS.Timer | undefined;
+let jugadorId: string = '';
 
 let alturaDelMapa;
 let anchoDelMapa = window.innerWidth - 200;
@@ -405,8 +405,32 @@ if (moveUpButton && moveLeftButton && moveDownButton && moveRigthButton) {
         }
     };
 }
+const unirseAlJuego = async () => {
+    try {
+        // @ts-ignore
+        const { data } = await axios.get('http://localhost:3000/unirse');
+        jugadorId = data.id;
+    } catch (error) {}
+};
+
+const selectMokepon = async (mokepon: Mokepon) => {
+    try {
+        // @ts-ignore
+        await axios({
+            method: 'POST',
+            url: `http://localhost:3000/mokepon/${jugadorId}`,
+            data: {
+                mokepon: mokepon.name,
+            },
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    } catch (error) {}
+};
 
 if (buttonPet) {
+    unirseAlJuego();
     mokepones.forEach((mokepon) => {
         const name = mokepon.name;
         const input = document.createElement('input');
@@ -437,6 +461,7 @@ if (buttonPet) {
             yourMokeponSelection = mokepones.find(
                 (mokepon) => mokepon.name === yourPet?.innerHTML
             ) as Mokepon;
+            selectMokepon(yourMokeponSelection);
             createAttacks();
         }
         selectEnemyPet(mokepons);

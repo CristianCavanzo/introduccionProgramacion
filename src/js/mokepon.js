@@ -1,3 +1,12 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import random from './rockPapper.js';
 const buttonReload = document.getElementById('reload');
 const yourPet = document.getElementById('yourPet');
@@ -25,6 +34,7 @@ const moveRigthButton = document.getElementById('moveRigth');
 const mapBackground = new Image();
 mapBackground.src = '../assets/mokemap.png';
 let intervalo;
+let jugadorId = '';
 let alturaDelMapa;
 let anchoDelMapa = window.innerWidth - 200;
 const maxWidth = 350;
@@ -335,7 +345,32 @@ if (moveUpButton && moveLeftButton && moveDownButton && moveRigthButton) {
         }
     };
 }
+const unirseAlJuego = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // @ts-ignore
+        const { data } = yield axios.get('http://localhost:3000/unirse');
+        jugadorId = data.id;
+    }
+    catch (error) { }
+});
+const selectMokepon = (mokepon) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // @ts-ignore
+        yield axios({
+            method: 'POST',
+            url: `http://localhost:3000/mokepon/${jugadorId}`,
+            data: {
+                mokepon: mokepon.name,
+            },
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    }
+    catch (error) { }
+});
 if (buttonPet) {
+    unirseAlJuego();
     mokepones.forEach((mokepon) => {
         const name = mokepon.name;
         const input = document.createElement('input');
@@ -361,6 +396,7 @@ if (buttonPet) {
         if (yourPet) {
             yourPet.innerHTML = mokepon.value;
             yourMokeponSelection = mokepones.find((mokepon) => mokepon.name === (yourPet === null || yourPet === void 0 ? void 0 : yourPet.innerHTML));
+            selectMokepon(yourMokeponSelection);
             createAttacks();
         }
         selectEnemyPet(mokepons);
