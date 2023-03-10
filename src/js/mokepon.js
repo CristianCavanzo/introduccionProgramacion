@@ -97,7 +97,7 @@ attacks.create({
     weak: ['FUEGO'],
 });
 class Mokepon {
-    constructor(name, foto, vida, attacks, fotoMapa, x = random(0, map.width - 40), y = random(0, map.height - 40), ancho = 40, alto = 40, mapaFoto = new Image(), velocidadX = 0, velocidadY = 0) {
+    constructor(name, foto, vida, attacks, fotoMapa, x = random(0, map.width - 40), y = random(0, map.height - 40), ancho = 40, alto = 40, mapaFoto = new Image(), velocidadX = 0, velocidadY = 0, id = null) {
         this.name = name;
         this.foto = foto;
         this.vida = vida;
@@ -110,6 +110,7 @@ class Mokepon {
         this.mapaFoto = mapaFoto;
         this.velocidadX = velocidadX;
         this.velocidadY = velocidadY;
+        this.id = id;
         this.mapaFoto.src = this.fotoMapa;
     }
     pintarMokepon() {
@@ -151,11 +152,6 @@ const selectEnemyPet = (mokepons) => {
         enemyPet.innerHTML = selection.value;
         (_a = document.getElementById('selectPet')) === null || _a === void 0 ? void 0 : _a.classList.add('none');
         sectionMap === null || sectionMap === void 0 ? void 0 : sectionMap.classList.remove('none');
-        const randomEnemy = mokepones.find((mokepon) => mokepon.name === enemyPet.innerHTML);
-        const clone = Object.assign(Object.create(Object.getPrototypeOf(randomEnemy)), randomEnemy);
-        enemyMokeponSelection = clone;
-        enemyMokeponSelection.x = random(0, map.width);
-        enemyMokeponSelection.y = random(0, map.height);
     }
 };
 const createAttacks = () => {
@@ -271,13 +267,35 @@ const revisarColision = (enemigo, mascota) => {
     (_b = document.getElementById('sectionMap')) === null || _b === void 0 ? void 0 : _b.classList.add('none');
     clearInterval(intervalo);
 };
+const enviarPosicion = (mascota) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const data = {
+            x: mascota.x,
+            y: mascota.y,
+        };
+        // @ts-ignore
+        const { data: jugadores } = yield axios({
+            method: 'POST',
+            data,
+            url: `http://localhost:3000/mokepon/${jugadorId}/posicion`,
+        });
+        if (!jugadores.length) {
+            throw 'No llegaron jugadores';
+        }
+        jugadores.forEach((jugador) => {
+            const mokeponSelected = mokepones.find((mokepon) => mokepon.name === jugador.mokepon);
+            const clone = Object.assign(Object.create(Object.getPrototypeOf(mokeponSelected)), mokeponSelected);
+            enemyMokeponSelection = clone;
+            enemyMokeponSelection.x = jugador.x;
+            enemyMokeponSelection.y = jugador.y;
+            enemyMokeponSelection.pintarMokepon();
+        });
+    }
+    catch (error) { }
+});
 const pintarCanvas = () => {
     if (!yourMokeponSelection) {
         return;
-    }
-    if (yourMokeponSelection.velocidadX !== 0 ||
-        yourMokeponSelection.velocidadY !== 0) {
-        revisarColision(enemyMokeponSelection, yourMokeponSelection);
     }
     yourMokeponSelection.x =
         yourMokeponSelection.x + yourMokeponSelection.velocidadX;
@@ -286,7 +304,11 @@ const pintarCanvas = () => {
     lienzo === null || lienzo === void 0 ? void 0 : lienzo.clearRect(0, 0, map.width, map.height);
     lienzo === null || lienzo === void 0 ? void 0 : lienzo.drawImage(mapBackground, 0, 0, map.width, map.height);
     yourMokeponSelection.pintarMokepon();
-    enemyMokeponSelection.pintarMokepon();
+    enviarPosicion(yourMokeponSelection);
+    if (yourMokeponSelection.velocidadX !== 0 ||
+        (yourMokeponSelection.velocidadY !== 0 && enemyMokeponSelection)) {
+        revisarColision(enemyMokeponSelection, yourMokeponSelection);
+    }
 };
 const moveUp = () => {
     yourMokeponSelection.velocidadY = -5;

@@ -8,9 +8,22 @@ const jugadores: Jugador[] = [];
 
 class Jugador {
     public mokepon: string = '';
+    public x: number = 0;
+    public y: number = 0;
     constructor(public id: string) {}
+    static encontrarJugadorById(jugadorId: string) {
+        const jugadoresByName = jugadores.find(
+            (jugador) => jugador.id === jugadorId
+        );
+        return jugadoresByName;
+    }
+
     asignMokepon(mokepon: string) {
         this.mokepon = mokepon;
+    }
+    actualizarPosicion(x: number, y: number) {
+        this.x = x;
+        this.y = y;
     }
 }
 
@@ -31,13 +44,22 @@ app.post('/mokepon/:id', cors(), (req: Request, res: Response) => {
     const jugadorId = req.params.id;
     const name = req.body.mokepon;
     const mokepon = new Mokepon(name);
-    jugadores
-        .find((jugador) => jugador.id === jugadorId)
-        ?.asignMokepon(mokepon.name);
+    Jugador.encontrarJugadorById(jugadorId)?.asignMokepon(mokepon.name);
 
     console.log(jugadores);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.json(jugadores);
+});
+
+app.options('/mokepon/:id/posicion', cors());
+app.post('/mokepon/:id/posicion', cors(), (req: Request, res: Response) => {
+    const jugadorId = req.params.id;
+    const x = req.body.x || 0;
+    const y = req.body.y || 0;
+    const jugadorSeleccionado = Jugador.encontrarJugadorById(jugadorId);
+    jugadorSeleccionado?.actualizarPosicion(x, y);
+    const enemigos = jugadores.filter((jugador) => jugador.id !== jugadorId);
+    res.json(enemigos);
 });
 
 app.listen(3000, () => {

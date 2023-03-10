@@ -116,7 +116,8 @@ class Mokepon {
         public alto = 40,
         public mapaFoto = new Image(),
         public velocidadX = 0,
-        public velocidadY = 0
+        public velocidadY = 0,
+        public id = null
     ) {
         this.mapaFoto.src = this.fotoMapa;
     }
@@ -184,16 +185,6 @@ const selectEnemyPet = (mokepons: NodeListOf<HTMLInputElement> | null) => {
         document.getElementById('selectPet')?.classList.add('none');
 
         sectionMap?.classList.remove('none');
-        const randomEnemy = mokepones.find(
-            (mokepon) => mokepon.name === enemyPet.innerHTML
-        ) as Mokepon;
-        const clone: Mokepon = Object.assign(
-            Object.create(Object.getPrototypeOf(randomEnemy)),
-            randomEnemy
-        );
-        enemyMokeponSelection = clone;
-        enemyMokeponSelection.x = random(0, map.width);
-        enemyMokeponSelection.y = random(0, map.height);
     }
 };
 const createAttacks = () => {
@@ -324,17 +315,50 @@ const revisarColision = (enemigo: Mokepon, mascota: Mokepon) => {
     clearInterval(intervalo);
 };
 
+const enviarPosicion = async (mascota: Mokepon) => {
+    try {
+        const data = {
+            x: mascota.x,
+            y: mascota.y,
+        };
+
+        interface Enemy {
+            id: string;
+            mokepon: string;
+            x: number;
+            y: number;
+        }
+        // @ts-ignore
+        const { data: jugadores }: { data: Enemy[] } = await axios({
+            method: 'POST',
+            data,
+            url: `http://localhost:3000/mokepon/${jugadorId}/posicion`,
+        });
+        if (!jugadores.length) {
+            throw 'No llegaron jugadores';
+        }
+
+        jugadores.forEach((jugador) => {
+            const mokeponSelected: Mokepon = mokepones.find(
+                (mokepon) => mokepon.name === jugador.mokepon
+            ) as Mokepon;
+            const clone: Mokepon = Object.assign(
+                Object.create(Object.getPrototypeOf(mokeponSelected)),
+                mokeponSelected
+            );
+            enemyMokeponSelection = clone;
+            enemyMokeponSelection.x = jugador.x;
+            enemyMokeponSelection.y = jugador.y;
+            enemyMokeponSelection.pintarMokepon();
+        });
+    } catch (error) {}
+};
+
 const pintarCanvas = () => {
     if (!yourMokeponSelection) {
         return;
     }
 
-    if (
-        yourMokeponSelection.velocidadX !== 0 ||
-        yourMokeponSelection.velocidadY !== 0
-    ) {
-        revisarColision(enemyMokeponSelection, yourMokeponSelection);
-    }
     yourMokeponSelection.x =
         yourMokeponSelection.x + yourMokeponSelection.velocidadX;
     yourMokeponSelection.y =
@@ -342,7 +366,13 @@ const pintarCanvas = () => {
     lienzo?.clearRect(0, 0, map.width, map.height);
     lienzo?.drawImage(mapBackground, 0, 0, map.width, map.height);
     yourMokeponSelection.pintarMokepon();
-    enemyMokeponSelection.pintarMokepon();
+    enviarPosicion(yourMokeponSelection);
+    if (
+        yourMokeponSelection.velocidadX !== 0 ||
+        (yourMokeponSelection.velocidadY !== 0 && enemyMokeponSelection)
+    ) {
+        revisarColision(enemyMokeponSelection, yourMokeponSelection);
+    }
 };
 
 const moveUp = () => {
