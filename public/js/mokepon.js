@@ -35,6 +35,8 @@ const mapBackground = new Image();
 mapBackground.src = '../assets/mokemap.png';
 let intervalo;
 let jugadorId = '';
+let enemyId = '';
+let ataqueEnemigoFetch = undefined;
 let alturaDelMapa;
 let anchoDelMapa = window.innerWidth - 200;
 const maxWidth = 350;
@@ -44,6 +46,7 @@ if (anchoDelMapa > maxWidth) {
 alturaDelMapa = (anchoDelMapa * 600) / 800;
 map.width = anchoDelMapa;
 map.height = alturaDelMapa;
+let mokeponesEnemigos = [];
 class Attacks {
     constructor(attacks) {
         this.attacks = attacks;
@@ -66,20 +69,20 @@ const disabledUsedButton = (event) => {
 const atackFire = (event) => {
     ataqueJugador = 'FUEGO';
     disabledUsedButton(event);
-    ataqueAleatorioEnemigo();
-    createMessage();
+    enviarAtaques();
+    // createMessage();
 };
 const atackEarth = (event) => {
     ataqueJugador = 'TIERRA';
     disabledUsedButton(event);
-    ataqueAleatorioEnemigo();
-    createMessage();
+    enviarAtaques();
+    // createMessage();
 };
 const atackWater = (event) => {
     ataqueJugador = 'AGUA';
     disabledUsedButton(event);
-    ataqueAleatorioEnemigo();
-    createMessage();
+    enviarAtaques();
+    // createMessage();
 };
 attacks.create({
     type: 'AGUA',
@@ -168,11 +171,38 @@ const createAttacks = () => {
         }
     }
 };
-const ataqueAleatorioEnemigo = () => {
-    const randomSelect = random(0, enemyMokeponSelection.attacks.length - 1);
-    ataqueEnemigo = enemyMokeponSelection.attacks[randomSelect].type;
-    enemyMokeponSelection.attacks.splice(randomSelect, 1);
-};
+const obtenerAtaques = () => __awaiter(void 0, void 0, void 0, function* () {
+    //@ts-ignore
+    const { data: ataque } = yield axios({
+        url: `/mokepon/${enemyId}/ataques/${turno}`,
+        method: 'get',
+    });
+    if (ataque.length > 0) {
+        ataqueEnemigo = ataque;
+        ataqueEnemigoFetch = true;
+        clearInterval(intervalo);
+        createMessage();
+    }
+});
+const enviarAtaques = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        //@ts-ignore
+        yield axios({
+            url: `/mokepon/${jugadorId}/ataques`,
+            method: 'post',
+            data: {
+                ataqueJugador,
+            },
+        });
+        ataqueEnemigoFetch = undefined;
+        intervalo = setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
+            if (!ataqueEnemigoFetch) {
+                yield obtenerAtaques();
+            }
+        }), 100);
+    }
+    catch (error) { }
+});
 const changeLife = (container) => {
     const containerLife = document.getElementById(container);
     if (container === 'yourPetLife' && containerLife) {
@@ -265,6 +295,7 @@ const revisarColision = (enemigo, mascota) => {
     detenerMovimiento();
     (_a = document.getElementById('selection-attack')) === null || _a === void 0 ? void 0 : _a.classList.remove('none');
     (_b = document.getElementById('sectionMap')) === null || _b === void 0 ? void 0 : _b.classList.add('none');
+    enemyId = enemigo.id;
     clearInterval(intervalo);
 };
 const enviarPosicion = (mascota) => __awaiter(void 0, void 0, void 0, function* () {
@@ -277,18 +308,19 @@ const enviarPosicion = (mascota) => __awaiter(void 0, void 0, void 0, function* 
         const { data: jugadores } = yield axios({
             method: 'POST',
             data,
-            url: `http://localhost:3000/mokepon/${jugadorId}/posicion`,
+            url: `/mokepon/${jugadorId}/posicion`,
         });
         if (!jugadores.length) {
             throw 'No llegaron jugadores';
         }
-        jugadores.forEach((jugador) => {
+        mokeponesEnemigos = jugadores.map((jugador) => {
             const mokeponSelected = mokepones.find((mokepon) => mokepon.name === jugador.mokepon);
             const clone = Object.assign(Object.create(Object.getPrototypeOf(mokeponSelected)), mokeponSelected);
             enemyMokeponSelection = clone;
             enemyMokeponSelection.x = jugador.x;
             enemyMokeponSelection.y = jugador.y;
-            enemyMokeponSelection.pintarMokepon();
+            enemyMokeponSelection.id = jugador.id;
+            return enemyMokeponSelection;
         });
     }
     catch (error) { }
@@ -305,10 +337,16 @@ const pintarCanvas = () => {
     lienzo === null || lienzo === void 0 ? void 0 : lienzo.drawImage(mapBackground, 0, 0, map.width, map.height);
     yourMokeponSelection.pintarMokepon();
     enviarPosicion(yourMokeponSelection);
-    if (yourMokeponSelection.velocidadX !== 0 ||
-        (yourMokeponSelection.velocidadY !== 0 && enemyMokeponSelection)) {
-        revisarColision(enemyMokeponSelection, yourMokeponSelection);
-    }
+    mokeponesEnemigos.forEach((mokepon) => {
+        mokepon.pintarMokepon();
+        revisarColision(mokepon, yourMokeponSelection);
+    });
+    // if (
+    //     yourMokeponSelection.velocidadX !== 0 ||
+    //     (yourMokeponSelection.velocidadY !== 0 && enemyMokeponSelection)
+    // ) {
+    //     revisarColision(enemyMokeponSelection, yourMokeponSelection);
+    // }
 };
 const moveUp = () => {
     yourMokeponSelection.velocidadY = -5;
@@ -332,6 +370,14 @@ if (moveUpButton && moveLeftButton && moveDownButton && moveRigthButton) {
     moveLeftButton.addEventListener('mouseup', detenerMovimiento);
     moveDownButton.addEventListener('mouseup', detenerMovimiento);
     moveRigthButton.addEventListener('mouseup', detenerMovimiento);
+    moveUpButton.addEventListener('touchstart', moveUp);
+    moveLeftButton.addEventListener('touchstart', moveLeft);
+    moveDownButton.addEventListener('touchstart', moveDown);
+    moveRigthButton.addEventListener('touchstart', moveRigth);
+    moveUpButton.addEventListener('touchsend', detenerMovimiento);
+    moveLeftButton.addEventListener('touchsend', detenerMovimiento);
+    moveDownButton.addEventListener('touchsend', detenerMovimiento);
+    moveRigthButton.addEventListener('touchsend', detenerMovimiento);
     document.onkeydown = (e) => {
         const keypress = e.key;
         switch (keypress) {
@@ -370,7 +416,7 @@ if (moveUpButton && moveLeftButton && moveDownButton && moveRigthButton) {
 const unirseAlJuego = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // @ts-ignore
-        const { data } = yield axios.get('http://localhost:3000/unirse');
+        const { data } = yield axios.get('/unirse');
         jugadorId = data.id;
     }
     catch (error) { }
@@ -380,7 +426,7 @@ const selectMokepon = (mokepon) => __awaiter(void 0, void 0, void 0, function* (
         // @ts-ignore
         yield axios({
             method: 'POST',
-            url: `http://localhost:3000/mokepon/${jugadorId}`,
+            url: `/mokepon/${jugadorId}`,
             data: {
                 mokepon: mokepon.name,
             },
